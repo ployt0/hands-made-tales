@@ -106,7 +106,8 @@ jobs:
 
           # Don't worry about bloat, we aren't tracing dependencies for export remotely.
           mkdir -p addons/
-          cp -r /tmp/gut/addons/gut addons/
+          # Match /tmp/gut/Gut-*/addons/gut using a wildcard
+          cp -r /tmp/gut/*/addons/gut addons/
           rm -rf /tmp/gut
 
       - name: Get GDMaim addon
@@ -120,7 +121,7 @@ jobs:
 
           # Don't worry about bloat, we aren't tracing dependencies for export remotely.
           mkdir -p addons/
-          cp -r /tmp/gdmaim/addons/gdmaim addons/
+          cp -r /tmp/gdmaim/*/addons/gdmaim addons/
           rm -rf /tmp/gdmaim
 
       - name: Setup talo addon
