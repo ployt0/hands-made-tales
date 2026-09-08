@@ -1,0 +1,134 @@
+name: Build and Export "hands made tales"
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+    inputs:
+      emsdk_version:
+        description: 'Select Approved Emscripten Version'
+        type: choice
+        required: true
+        default: '6.0.9'
+        options:
+          - '6.0.9'
+          - '5.0.7'
+
+env:
+  GODOT_VERSION: "4.7.2-stable"
+  GODOT_TEMPLATE_DIR: "4.7.2.stable"
+  SCONS_CACHE: ${{ github.workspace }}/.scons_cache
+
+jobs:
+  build-and-export:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v6
+
+      - name: Setup Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+
+      - name: Install system build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mingw-w64 ccache
+          pip install scons
+
+      - name: Setup Emscripten (Web)
+        uses: emscripten-core/setup-emsdk@v15
+        with:
+          version: ${{ inputs.emsdk_version || '5.0.7' }}
+
+      - name: Verify
+        run: emcc -v
+
+      # Caches compiled object files so builds take ~1-2 min instead of 25 min after the first run
+      - name: SCons cache
+        uses: actions/cache@v6
+        with:
+          path: ${{ env.SCONS_CACHE }}
+          key: ${{ runner.os }}-scons-${{ env.GODOT_VERSION }}-${{ hashFiles('hands_talo5.gdbuild') }}
+          restore-keys: |
+            ${{ runner.os }}-scons-${{ env.GODOT_VERSION }}-
+            ${{ runner.os }}-scons-
+
+      - name: Download Godot engine editor
+        run: |
+          wget -q https://github.com/godotengine/godot/releases/download/${{ env.GODOT_VERSION }}/Godot_v${{ env.GODOT_VERSION }}_linux.x86_64.zip
+          unzip -q Godot_v${{ env.GODOT_VERSION }}_linux.x86_64.zip
+          mv Godot_v${{ env.GODOT_VERSION }}_linux.x86_64 /usr/local/bin/godot
+          chmod +x /usr/local/bin/godot
+
+      - name: Run GUT Unit tests (early fail)
+        continue-on-error: true # Set to false once tests are active
+        run: |
+          if [ -f "addons/gut/gut_cmdln.gd" ]; then
+            godot --headless -s addons/gut/gut_cmdln.gd -gexit
+          fi
+
+      - name: Clone Godot engine source
+        run: |
+          git clone --depth 1 --branch ${{ env.GODOT_VERSION }} https://github.com/godotengine/godot.git godot-source
+          cp hands_talo5.gdbuild godot-source/
+
+      - name: Compile web template (dlink + threads)
+        working-directory: godot-source
+        run: |
+          scons platform=web target=template_release \
+            threads=yes d3d12=no debug_symbols=no optimize=size lto=full \
+            module_text_server_adv_enabled=no module_text_server_fb_enabled=yes \
+            disable_3d=yes dlink_enabled=yes disable_advanced_gui=yes \
+            build_profile=hands_talo5.gdbuild \
+            scons_cache=${{ env.SCONS_CACHE }} -j$(nproc)
+
+      - name: Compile Windows template (x-compile with MinGW)
+        working-directory: godot-source
+        run: |
+          scons platform=windows arch=x86_64 target=template_release \
+            d3d12=no debug_symbols=no optimize=size lto=full \
+            module_text_server_adv_enabled=no module_text_server_fb_enabled=yes \
+            disable_3d=yes disable_advanced_gui=yes \
+            build_profile=hands_talo5.gdbuild \
+            scons_cache=${{ env.SCONS_CACHE }} -j$(nproc)
+
+      - name: Install Custom templates into Godot default folder
+        run: |
+          DEST="$HOME/.local/share/godot/export_templates/${{ env.GODOT_TEMPLATE_DIR }}"
+          mkdir -p "$DEST"
+
+          # Package Web template into the official filename Godot looks for
+          cd godot-source/bin
+          zip -j "$DEST/web_dlink_release.zip" godot.web.template_release.wasm32.dlink.*
+          # Also create fallback standard name
+          cp "$DEST/web_dlink_release.zip" "$DEST/web_release.zip"
+
+          # Place Windows template into the official filename
+          cp godot.windows.template_release.x86_64.exe "$DEST/windows_release_x86_64.exe"
+
+      - name: Export web
+        run: |
+          mkdir -p export/web
+          godot --headless --export-release "Web" export/web/index.html
+
+      - name: Export windows
+        run: |
+          mkdir -p export/windows
+          godot --headless --export-release "Windows Desktop" export/windows/hands_made_tales.exe
+
+      - name: Upload web build
+        uses: actions/upload-artifact@v7
+        with:
+          name: hands-made-tales-web
+          path: export/web/
+
+      - name: Upload windows build
+        uses: actions/upload-artifact@v7
+        with:
+          name: hands-made-tales-windows
+          path: export/windows/
