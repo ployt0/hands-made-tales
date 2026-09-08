@@ -101,7 +101,7 @@ jobs:
           URL="https://github.com/bitwes/Gut/archive/refs/tags/${GUT_TAG}.zip"
 
           mkdir -p /tmp/gut
-          curl -sL "$URL" -o /tmp/gut/gut.zip
+          curl -fsSL "$URL" -o /tmp/gut/gut.zip
           unzip -q /tmp/gut/gut.zip -d /tmp/gut/
 
           # Don't worry about bloat, we aren't tracing dependencies for export remotely.
@@ -116,7 +116,7 @@ jobs:
           URL="https://github.com/cherriesandmochi/gdmaim/archive/refs/tags/${GDMAIM_TAG}.zip"
 
           mkdir -p /tmp/gdmaim
-          curl -sL "$URL" -o /tmp/gdmaim/gdmaim.zip
+          curl -fsSL "$URL" -o /tmp/gdmaim/gdmaim.zip
           unzip -q /tmp/gdmaim/gdmaim.zip -d /tmp/gdmaim/
 
           # Don't worry about bloat, we aren't tracing dependencies for export remotely.
@@ -127,14 +127,10 @@ jobs:
       - name: Setup talo addon
         run: |
           TALO_TAG="${{ inputs.talo_version || '1.0.0' }}"
-          if [ "$TALO_TAG" = "latest" ]; then
-            URL="https://github.com/TaloDev/godot/releases/latest/download/talo-godot.zip"
-          else
-            URL="https://github.com/TaloDev/godot/releases/download/${TALO_TAG}/talo-godot.zip"
-          fi
+          URL="https://github.com/TaloDev/godot/releases/download/${TALO_TAG}/talo-godot-${TALO_TAG}.zip"
 
           mkdir -p /tmp/talo
-          curl -sL "$URL" -o /tmp/talo/talo.zip
+          curl -fsSL "$URL" -o /tmp/talo/talo.zip
           unzip -q /tmp/talo/talo.zip -d /tmp/talo/
 
           mkdir -p addons/
