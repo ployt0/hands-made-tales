@@ -44,13 +44,11 @@ on:
 env:
   GODOT_VERSION: "4.7.2-stable"
   GODOT_TEMPLATE_DIR: "4.7.2.stable"
+  SCONS_CACHE: /tmp/.scons_cache
 
 jobs:
   build-and-export:
     runs-on: ubuntu-latest
-    env:
-      SCONS_CACHE: ${{ runner.temp }}/.scons_cache
-
 
     steps:
       - name: Checkout project
@@ -153,11 +151,11 @@ jobs:
       - name: Clone Godot engine source
         run: |
           git clone --depth 1 --branch ${{ env.GODOT_VERSION }} https://github.com/godotengine/godot.git ${{ runner.temp }}/godot-source
-          cp hands_talo5.gdbuild ${{ runner.temp }}/godot-source/
+          cp hands_talo5.gdbuild /tmp/godot-source/
 
 
       - name: Compile web template (dlink + threads)
-        working-directory: ${{ runner.temp }}/godot-source
+        working-directory: /tmp/godot-source
         run: |
           scons platform=web target=template_release \
             threads=yes d3d12=no debug_symbols=no optimize=size lto=full \
@@ -168,7 +166,7 @@ jobs:
 
 
       - name: Compile Windows template (x-compile with MinGW)
-        working-directory: ${{ runner.temp }}/godot-source
+        working-directory: /tmp/godot-source
         run: |
           scons platform=windows arch=x86_64 target=template_release \
             d3d12=no winrt=no accesskit=no angle=no \
@@ -184,9 +182,9 @@ jobs:
           DEST="$HOME/.local/share/godot/export_templates/${{ env.GODOT_TEMPLATE_DIR }}"
           mkdir -p "$DEST"
 
-          cp ${{ runner.temp }}/godot-source/bin/godot.web.template_release.wasm32.dlink.zip "$DEST/web_dlink_release.zip"
-          cp ${{ runner.temp }}/godot-source/bin/godot.web.template_release.wasm32.dlink.zip "$DEST/web_release.zip"
-          cp ${{ runner.temp }}/godot-source/bin/godot.windows.template_release.x86_64.exe "$DEST/windows_release_x86_64.exe"
+          cp /tmp/godot-source/bin/godot.web.template_release.wasm32.dlink.zip "$DEST/web_dlink_release.zip"
+          cp /tmp/godot-source/bin/godot.web.template_release.wasm32.dlink.zip "$DEST/web_release.zip"
+          cp /tmp/godot-source/bin/godot.windows.template_release.x86_64.exe "$DEST/windows_release_x86_64.exe"
 
       - name: Export web
         run: |
