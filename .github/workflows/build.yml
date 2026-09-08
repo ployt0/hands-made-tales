@@ -147,7 +147,7 @@ jobs:
 
       - name: Clone Godot engine source
         run: |
-          git clone --depth 1 --branch ${{ env.GODOT_VERSION }} https://github.com/godotengine/godot.git ${{ runner.temp }}/godot-source
+          git clone -q --depth 1 --branch ${{ env.GODOT_VERSION }} https://github.com/godotengine/godot.git /tmp/godot-source
           cp hands_talo5.gdbuild /tmp/godot-source/
 
 
