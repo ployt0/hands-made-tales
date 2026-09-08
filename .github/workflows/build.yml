@@ -11,7 +11,7 @@ on:
         description: 'Select Approved Emscripten Version'
         type: choice
         required: true
-        default: '6.0.9'
+        default: '5.0.7'
         options:
           - '6.0.9'
           - '5.0.7'
@@ -45,6 +45,10 @@ env:
   GODOT_VERSION: "4.7.2-stable"
   GODOT_TEMPLATE_DIR: "4.7.2.stable"
   SCONS_CACHE: /tmp/.scons_cache
+  EMSDK_VERSION: ${{ inputs.emsdk_version || '5.0.7' }}
+  TALO_VERSION: ${{ inputs.talo_version || '1.0.0' }}
+  GUT_VERSION: ${{ inputs.gut_version || 'v9.6.1' }}
+  GDMAIM_VERSION: ${{ inputs.gdmaim_version || '0.3.0' }}
 
 jobs:
   build-and-export:
@@ -73,7 +77,7 @@ jobs:
       - name: Setup Emscripten (Web)
         uses: emscripten-core/setup-emsdk@v15
         with:
-          version: ${{ inputs.emsdk_version || '5.0.7' }}
+          version: ${{ env.EMSDK_VERSION }}
 
       - name: Verify
         run: emcc -v
@@ -83,10 +87,10 @@ jobs:
         uses: actions/cache@v6
         with:
           path: ${{ env.SCONS_CACHE }}
-          key: ${{ runner.os }}-scons-${{ env.GODOT_VERSION }}-${{ hashFiles('hands_talo5.gdbuild') }}
+          key: ${{ runner.os }}-scons-${{ env.GODOT_VERSION }}-emsdk-${{ env.EMSDK_VERSION }}-${{ hashFiles('hands_talo5.gdbuild') }}
           restore-keys: |
+            ${{ runner.os }}-scons-${{ env.GODOT_VERSION }}-emsdk-${{ env.EMSDK_VERSION }}-
             ${{ runner.os }}-scons-${{ env.GODOT_VERSION }}-
-            ${{ runner.os }}-scons-
 
       - name: Download Godot engine editor
         run: |
@@ -97,7 +101,7 @@ jobs:
 
       - name: Get GUT addon
         run: |
-          GUT_TAG="${{ inputs.gut_version || 'v9.6.1' }}"
+          GUT_TAG="${GUT_VERSION}"
           URL="https://github.com/bitwes/Gut/archive/refs/tags/${GUT_TAG}.zip"
 
           mkdir -p /tmp/gut
@@ -112,7 +116,7 @@ jobs:
 
       - name: Get GDMaim addon
         run: |
-          GDMAIM_TAG="${{ inputs.gdmaim_version || '0.3.0' }}"
+          GDMAIM_TAG="${GDMAIM_VERSION}"
           URL="https://github.com/cherriesandmochi/gdmaim/archive/refs/tags/${GDMAIM_TAG}.zip"
 
           mkdir -p /tmp/gdmaim
@@ -126,7 +130,7 @@ jobs:
 
       - name: Setup talo addon
         run: |
-          TALO_TAG="${{ inputs.talo_version || '1.0.0' }}"
+          TALO_TAG="${TALO_VERSION}"
           URL="https://github.com/TaloDev/godot/releases/download/${TALO_TAG}/talo-godot-${TALO_TAG}.zip"
 
           mkdir -p /tmp/talo
@@ -137,6 +141,17 @@ jobs:
           rm -fr /tmp/talo/addons/talo/samples
           cp -r /tmp/talo/addons/talo addons/
           rm -rf /tmp/talo
+
+      - name: Configure Talo credentials
+        env:
+          TALO_KEY: ${{ secrets.TALO_CLIENT_KEY }}
+        run: |
+          if [ -z "$TALO_KEY" ]; then
+            echo "Error: TALO_CLIENT_KEY secret is not set!"
+            exit 1
+          fi
+
+          sed -i "s|YOUR_LEADERBOARD_KEY_HERE|${TALO_KEY}|g" addons/talo/settings.cfg
 
       - name: Run GUT Unit tests (early fail)
         continue-on-error: true # Set to false once tests are active
