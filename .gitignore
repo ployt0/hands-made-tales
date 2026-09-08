@@ -1,6 +1,8 @@
 /addons/gut/*
 /addons/talo/*
+/addons/gdmaim/*
 !/addons/talo/settings.cfg
+!/addons/gdmaim/export.cfg
 
 
 # Godot 4+ specific ignores
