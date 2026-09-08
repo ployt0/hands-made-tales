@@ -15,11 +15,36 @@ on:
         options:
           - '6.0.9'
           - '5.0.7'
+      talo_version:
+        description: 'Talo version'
+        type: choice
+        required: true
+        default: '1.0.0'
+        options:
+          - '1.0.0'
+          - '0.49.0'
+      gut_version:
+        description: 'GUT version'
+        type: choice
+        required: true
+        default: 'v9.6.1'
+        options:
+          - 'v9.6.1'
+          - 'v9.7.1'
+      gdmaim_version:
+        description: 'GDMaim version'
+        type: choice
+        required: true
+        default: '0.3.0'
+        options:
+          - '0.3.0'
+          - '0.2.0'
+
 
 env:
   GODOT_VERSION: "4.7.2-stable"
   GODOT_TEMPLATE_DIR: "4.7.2.stable"
-  SCONS_CACHE: ${{ github.workspace }}/.scons_cache
+  SCONS_CACHE: ${{ runner.temp }}/.scons_cache
 
 jobs:
   build-and-export:
@@ -70,6 +95,52 @@ jobs:
           mv Godot_v${{ env.GODOT_VERSION }}_linux.x86_64 /usr/local/bin/godot
           chmod +x /usr/local/bin/godot
 
+      - name: Get GUT addon
+        run: |
+          GUT_TAG="${{ inputs.gut_version || 'v9.6.1' }}"
+          URL="https://github.com/bitwes/Gut/archive/refs/tags/${GUT_TAG}.zip"
+
+          mkdir -p /tmp/gut
+          curl -sL "$URL" -o /tmp/gut/gut.zip
+          unzip -q /tmp/gut/gut.zip -d /tmp/gut/
+
+          # Don't worry about bloat, we aren't tracing dependencies for export remotely.
+          mkdir -p addons/
+          cp -r /tmp/gut/addons/gut addons/
+          rm -rf /tmp/gut
+
+      - name: Get GDMaim addon
+        run: |
+          GDMAIM_TAG="${{ inputs.gdmaim_version || '0.3.0' }}"
+          URL="https://github.com/cherriesandmochi/gdmaim/archive/refs/tags/${GDMAIM_TAG}.zip"
+
+          mkdir -p /tmp/gdmaim
+          curl -sL "$URL" -o /tmp/gdmaim/gdmaim.zip
+          unzip -q /tmp/gdmaim/gdmaim.zip -d /tmp/gdmaim/
+
+          # Don't worry about bloat, we aren't tracing dependencies for export remotely.
+          mkdir -p addons/
+          cp -r /tmp/gdmaim/addons/gdmaim addons/
+          rm -rf /tmp/gdmaim
+
+      - name: Setup talo addon
+        run: |
+          TALO_TAG="${{ inputs.talo_version || '1.0.0' }}"
+          if [ "$TALO_TAG" = "latest" ]; then
+            URL="https://github.com/TaloDev/godot/releases/latest/download/talo-godot.zip"
+          else
+            URL="https://github.com/TaloDev/godot/releases/download/${TALO_TAG}/talo-godot.zip"
+          fi
+
+          mkdir -p /tmp/talo
+          curl -sL "$URL" -o /tmp/talo/talo.zip
+          unzip -q /tmp/talo/talo.zip -d /tmp/talo/
+
+          mkdir -p addons/
+          rm -fr /tmp/talo/addons/talo/samples
+          cp -r /tmp/talo/addons/talo addons/
+          rm -rf /tmp/talo
+
       - name: Run GUT Unit tests (early fail)
         continue-on-error: true # Set to false once tests are active
         run: |
@@ -79,23 +150,12 @@ jobs:
 
       - name: Clone Godot engine source
         run: |
-          git clone --depth 1 --branch ${{ env.GODOT_VERSION }} https://github.com/godotengine/godot.git godot-source
-          cp hands_talo5.gdbuild godot-source/
+          git clone --depth 1 --branch ${{ env.GODOT_VERSION }} https://github.com/godotengine/godot.git ${{ runner.temp }}/godot-source
+          cp hands_talo5.gdbuild ${{ runner.temp }}/godot-source/
 
-
-      - name: Compile Windows template (x-compile with MinGW)
-        working-directory: godot-source
-        run: |
-          scons platform=windows arch=x86_64 target=template_release \
-            d3d12=no winrt=no accesskit=no angle=no \
-            debug_symbols=no optimize=size lto=full \
-            module_text_server_adv_enabled=no module_text_server_fb_enabled=yes \
-            disable_3d=yes disable_advanced_gui=yes \
-            build_profile=hands_talo5.gdbuild \
-            cache_path=${{ env.SCONS_CACHE }} -j$(nproc)
 
       - name: Compile web template (dlink + threads)
-        working-directory: godot-source
+        working-directory: ${{ runner.temp }}/godot-source
         run: |
           scons platform=web target=template_release \
             threads=yes d3d12=no debug_symbols=no optimize=size lto=full \
@@ -105,17 +165,26 @@ jobs:
             cache_path=${{ env.SCONS_CACHE }} -j$(nproc)
 
 
+      - name: Compile Windows template (x-compile with MinGW)
+        working-directory: ${{ runner.temp }}/godot-source
+        run: |
+          scons platform=windows arch=x86_64 target=template_release \
+            d3d12=no winrt=no accesskit=no angle=no \
+            debug_symbols=no optimize=size lto=full \
+            module_text_server_adv_enabled=no module_text_server_fb_enabled=yes \
+            disable_3d=yes disable_advanced_gui=yes \
+            build_profile=hands_talo5.gdbuild \
+            cache_path=${{ env.SCONS_CACHE }} -j$(nproc)
+
+
       - name: Install custom templates into Godot default folder
         run: |
           DEST="$HOME/.local/share/godot/export_templates/${{ env.GODOT_TEMPLATE_DIR }}"
           mkdir -p "$DEST"
 
-          # Package web template into the official filename Godot looks for
-          cp godot-source/bin/godot.web.template_release.wasm32.dlink.zip "$DEST/web_dlink_release.zip"
-          cp godot-source/bin/godot.web.template_release.wasm32.dlink.zip "$DEST/web_release.zip"
-
-          # Place Windows template into the official filename.
-          cp godot-source/bin/godot.windows.template_release.x86_64.exe "$DEST/windows_release_x86_64.exe"
+          cp ${{ runner.temp }}/godot-source/bin/godot.web.template_release.wasm32.dlink.zip "$DEST/web_dlink_release.zip"
+          cp ${{ runner.temp }}/godot-source/bin/godot.web.template_release.wasm32.dlink.zip "$DEST/web_release.zip"
+          cp ${{ runner.temp }}/godot-source/bin/godot.windows.template_release.x86_64.exe "$DEST/windows_release_x86_64.exe"
 
       - name: Export web
         run: |
