@@ -1,4 +1,4 @@
-name: Build and Export "hands made tales"
+name: Build and export "hands made tales"
 
 on:
   push:
@@ -44,11 +44,13 @@ on:
 env:
   GODOT_VERSION: "4.7.2-stable"
   GODOT_TEMPLATE_DIR: "4.7.2.stable"
-  SCONS_CACHE: ${{ runner.temp }}/.scons_cache
 
 jobs:
   build-and-export:
     runs-on: ubuntu-latest
+    env:
+      SCONS_CACHE: ${{ runner.temp }}/.scons_cache
+
 
     steps:
       - name: Checkout project
