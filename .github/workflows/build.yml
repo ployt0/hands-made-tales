@@ -37,11 +37,12 @@ jobs:
       - name: Install system build tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y mingw-w64 ccache
+          sudo apt-get install -y \
+            g++-mingw-w64-x86-64-posix \
+            gcc-mingw-w64-x86-64-posix \
+            ccache
 
-          # Force MinGW to use the POSIX threading model
-          sudo update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix
-          sudo update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
+          x86_64-w64-mingw32-g++ -v
 
           pip install scons
 
@@ -82,6 +83,17 @@ jobs:
           git clone --depth 1 --branch ${{ env.GODOT_VERSION }} https://github.com/godotengine/godot.git godot-source
           cp hands_talo5.gdbuild godot-source/
 
+      - name: Compile Windows template (x-compile with MinGW)
+        working-directory: godot-source
+        run: |
+          scons platform=windows arch=x86_64 target=template_release \
+            d3d12=no winrt=no accesskit=no angle=no \
+            debug_symbols=no optimize=size lto=full \
+            module_text_server_adv_enabled=no module_text_server_fb_enabled=yes \
+            disable_3d=yes disable_advanced_gui=yes \
+            build_profile=hands_talo5.gdbuild \
+            cache_path=${{ env.SCONS_CACHE }} -j$(nproc)
+
       - name: Compile web template (dlink + threads)
         working-directory: godot-source
         run: |
@@ -90,19 +102,9 @@ jobs:
             module_text_server_adv_enabled=no module_text_server_fb_enabled=yes \
             disable_3d=yes dlink_enabled=yes disable_advanced_gui=yes \
             build_profile=hands_talo5.gdbuild \
-            scons_cache=${{ env.SCONS_CACHE }} -j$(nproc)
+            cache_path=${{ env.SCONS_CACHE }} -j$(nproc)
 
-      - name: Compile Windows template (x-compile with MinGW)
-        working-directory: godot-source
-        run: |
-          scons platform=windows arch=x86_64 target=template_release \
-            d3d12=no debug_symbols=no optimize=size lto=full \
-            module_text_server_adv_enabled=no module_text_server_fb_enabled=yes \
-            disable_3d=yes disable_advanced_gui=yes \
-            build_profile=hands_talo5.gdbuild \
-            scons_cache=${{ env.SCONS_CACHE }} -j$(nproc)
-
-      - name: Install Custom templates into Godot default folder
+      - name: Install custom templates into Godot default folder
         run: |
           DEST="$HOME/.local/share/godot/export_templates/${{ env.GODOT_TEMPLATE_DIR }}"
           mkdir -p "$DEST"
