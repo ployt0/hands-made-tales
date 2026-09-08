@@ -1,0 +1,22 @@
+/addons/gut/*
+/addons/talo/*
+!/addons/talo/settings.cfg
+
+
+# Godot 4+ specific ignores
+.godot/
+/android/
+.nomedia
+
+# Godot-specific ignores
+.import/
+export.cfg
+export_credentials.cfg
+*.tmp
+/export/*
+!/export/.gdignore
+!/export/selfie.py
+!/export/selfie_win.py
+
+# Imported translations (automatically generated from CSV files)
+*.translation

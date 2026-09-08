@@ -1,0 +1,76 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: en\n"
+
+msgid "SUBMIT_SCORE"
+msgstr "Submit"
+
+msgid "CONTINUE_BUTTON"
+msgstr "Continue"
+
+msgid "AGAIN_BUTTON"
+msgstr "Again"
+
+msgid "BACK_BUTTON"
+msgstr "Back"
+
+msgid "FULL_SCREEN_CHK"
+msgstr "Full screen"
+
+msgid "RESET_TUTORIAL_BTN"
+msgstr "Reset"
+
+msgid "SKIP_TUTORIAL_BTN"
+msgstr "Skip"
+
+msgid "VOLUME_LABEL"
+msgstr "Volume"
+
+msgid "MAIN_LABEL"
+msgstr "Main"
+
+msgid "SFX_LABEL"
+msgstr "SFX"
+
+msgid "MUSIC_LABEL"
+msgstr "Music"
+
+msgid "CONTROLS_LABEL"
+msgstr "Controls"
+
+msgid "SURE_TO_RESTART"
+msgstr "Are you sure you want to restart?\nAll progress will be lost."
+
+msgid "RESUME_BTN"
+msgstr "Resume"
+
+msgid "SETTINGS_BTN"
+msgstr "Settings"
+
+msgid "LEADERBOARD_BTN"
+msgstr "Leaderboard"
+
+msgid "CREDITS_BTN"
+msgstr "Credits"
+
+msgid "RESTART_BTN"
+msgstr "Restart"
+
+msgid "CHOOSE_LABEL"
+msgstr "Choose"
+
+msgid "CANCEL_BTN"
+msgstr "Cancel"
+
+msgid "TUT_PROGRESS_LABEL"
+msgstr "Tutorial progres:"
+
+msgid "QUIT_BTN"
+msgstr "Quit"
+
+msgid "LOADING_LABEL"
+msgstr "Loading..."
+
+
+

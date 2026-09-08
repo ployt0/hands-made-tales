@@ -1,0 +1,68 @@
+[gd_scene format=3 uid="uid://i1r4g8qktmo7"]
+
+[ext_resource type="Script" uid="uid://b8mk4q2m0yfw2" path="res://scripts/ui/settings.gd" id="1_4vppr"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_f4mfi"]
+bg_color = Color(0.09803922, 0.09803922, 0.09803922, 0.7490196)
+
+[node name="Settings" type="PanelContainer" unique_id=521436830]
+offset_right = 212.0
+offset_bottom = 249.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_f4mfi")
+script = ExtResource("1_4vppr")
+
+[node name="SettingsHBox" type="HBoxContainer" parent="." unique_id=632476328]
+layout_mode = 2
+theme_override_constants/separation = 100
+
+[node name="MarginContainer" type="MarginContainer" parent="SettingsHBox" unique_id=2074996816]
+layout_mode = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 6
+
+[node name="VBoxContainer" type="VBoxContainer" parent="SettingsHBox/MarginContainer" unique_id=696650785]
+process_mode = 3
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+
+[node name="BackButton" type="Button" parent="SettingsHBox/MarginContainer/VBoxContainer" unique_id=758988236]
+layout_mode = 2
+text = "BACK_BUTTON"
+
+[node name="VolumeVBox" type="VBoxContainer" parent="SettingsHBox/MarginContainer/VBoxContainer" unique_id=1722658423]
+layout_mode = 2
+
+[node name="VolumeLabel" type="Label" parent="SettingsHBox/MarginContainer/VBoxContainer/VolumeVBox" unique_id=699328065]
+layout_mode = 2
+theme_override_font_sizes/font_size = 38
+text = "VOLUME_LABEL"
+clip_text = true
+
+[node name="MainLabel" type="Label" parent="SettingsHBox/MarginContainer/VBoxContainer/VolumeVBox" unique_id=55865194]
+layout_mode = 2
+text = "MAIN_LABEL"
+
+[node name="MainVol" type="HSlider" parent="SettingsHBox/MarginContainer/VBoxContainer/VolumeVBox" unique_id=1038482631]
+layout_mode = 2
+max_value = 1.0
+step = 0.001
+
+[node name="MusicLabel" type="Label" parent="SettingsHBox/MarginContainer/VBoxContainer/VolumeVBox" unique_id=483191584]
+layout_mode = 2
+text = "MUSIC_LABEL"
+
+[node name="MusicVol" type="HSlider" parent="SettingsHBox/MarginContainer/VBoxContainer/VolumeVBox" unique_id=630176764]
+layout_mode = 2
+max_value = 1.0
+step = 0.001
+
+[node name="SFXLabel" type="Label" parent="SettingsHBox/MarginContainer/VBoxContainer/VolumeVBox" unique_id=660761135]
+layout_mode = 2
+text = "SFX_LABEL"
+
+[node name="SFXVol" type="HSlider" parent="SettingsHBox/MarginContainer/VBoxContainer/VolumeVBox" unique_id=1703247264]
+layout_mode = 2
+max_value = 1.0
+step = 0.001

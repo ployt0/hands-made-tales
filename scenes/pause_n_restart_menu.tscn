@@ -1,0 +1,115 @@
+[gd_scene format=3 uid="uid://lbmo7hcf23kc"]
+
+[ext_resource type="Script" uid="uid://dje5p8xo30mqg" path="res://scripts/ui/pause_n_restart_menu.gd" id="1_n6ut0"]
+[ext_resource type="PackedScene" uid="uid://i1r4g8qktmo7" path="res://scenes/settings.tscn" id="3_nnlcr"]
+[ext_resource type="PackedScene" uid="uid://ch5oytjxp751f" path="res://scenes/credits.tscn" id="4_7l7mv"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_n6ut0"]
+bg_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7l7mv"]
+bg_color = Color(0.0627451, 0.043137256, 0.15294118, 1)
+
+[node name="PauseNRestartMenu" type="CanvasLayer" unique_id=1625459900]
+process_mode = 3
+script = ExtResource("1_n6ut0")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1749732589]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 1, 1, 0)
+
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=254829044]
+offset_left = 80.0
+offset_top = 73.0
+offset_right = 240.0
+offset_bottom = 209.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_n6ut0")
+
+[node name="PauseMenuVBox" type="VBoxContainer" parent="PanelContainer" unique_id=985337321]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+
+[node name="ResumeButton" type="Button" parent="PanelContainer/PauseMenuVBox" unique_id=237764654]
+layout_mode = 2
+focus_neighbor_top = NodePath("../Restart")
+text = "RESUME_BTN"
+
+[node name="SettingsButton" type="Button" parent="PanelContainer/PauseMenuVBox" unique_id=342210656]
+layout_mode = 2
+text = "SETTINGS_BTN"
+
+[node name="CreditsButton" type="Button" parent="PanelContainer/PauseMenuVBox" unique_id=74086371]
+layout_mode = 2
+text = "CREDITS_BTN"
+
+[node name="Restart" type="Button" parent="PanelContainer/PauseMenuVBox" unique_id=1961226410]
+layout_mode = 2
+tooltip_text = "Quitter, huh?"
+focus_neighbor_bottom = NodePath("../ResumeButton")
+text = "RESTART_BTN"
+
+[node name="SettingsVBox" parent="." unique_id=954063182 instance=ExtResource("3_nnlcr")]
+visible = false
+offset_left = 63.0
+offset_top = 100.0
+offset_right = 235.0
+offset_bottom = 384.0
+
+[node name="CreditsScene" parent="." unique_id=870393720 instance=ExtResource("4_7l7mv")]
+visible = false
+
+[node name="ModalConfirmDialog" type="CenterContainer" parent="." unique_id=1169388130]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="ModalConfirmDialog" unique_id=665537324]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_7l7mv")
+
+[node name="MarginContainer" type="MarginContainer" parent="ModalConfirmDialog/Panel" unique_id=1403909953]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ModalConfirmDialog/Panel/MarginContainer" unique_id=913958907]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Label" type="Label" parent="ModalConfirmDialog/Panel/MarginContainer/VBoxContainer" unique_id=1073634251]
+layout_mode = 2
+text = "SURE_TO_RESTART"
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ModalConfirmDialog/Panel/MarginContainer/VBoxContainer" unique_id=811392314]
+layout_mode = 2
+theme_override_constants/separation = 30
+alignment = 1
+
+[node name="CancelButton" type="Button" parent="ModalConfirmDialog/Panel/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1616309999]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+text = "CANCEL_BTN"
+
+[node name="RestartButton" type="Button" parent="ModalConfirmDialog/Panel/MarginContainer/VBoxContainer/HBoxContainer" unique_id=772562700]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+text = "RESTART_BTN"
+
+[connection signal="pressed" from="PanelContainer/PauseMenuVBox/ResumeButton" to="." method="_on_resume_button_pressed"]
+[connection signal="pressed" from="PanelContainer/PauseMenuVBox/SettingsButton" to="." method="_on_settings_button_pressed"]
+[connection signal="pressed" from="PanelContainer/PauseMenuVBox/CreditsButton" to="." method="_on_credits_button_pressed"]
+[connection signal="pressed" from="PanelContainer/PauseMenuVBox/Restart" to="." method="_on_restart_pressed"]
+[connection signal="back_pressed" from="SettingsVBox" to="." method="_on_settings_back_button_pressed"]
+[connection signal="closed" from="CreditsScene" to="." method="_on_credits_scene_closed"]
+[connection signal="pressed" from="ModalConfirmDialog/Panel/MarginContainer/VBoxContainer/HBoxContainer/CancelButton" to="." method="_on_cancel_button_pressed"]
+[connection signal="pressed" from="ModalConfirmDialog/Panel/MarginContainer/VBoxContainer/HBoxContainer/RestartButton" to="." method="_on_restart_button_pressed"]

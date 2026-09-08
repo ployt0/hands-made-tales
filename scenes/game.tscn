@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://bg8ehdbty8vdb"]
+
+[ext_resource type="Script" uid="uid://bsm2um1to0nov" path="res://scripts/game.gd" id="1_lnu2h"]
+[ext_resource type="Script" uid="uid://ddnopq2qgyf52" path="res://scripts/sfx_player.gd" id="1_uwrxv"]
+[ext_resource type="PackedScene" uid="uid://d0e18qxtkymrq" path="res://scenes/game_content.tscn" id="3_lnu2h"]
+[ext_resource type="PackedScene" uid="uid://dli7egk4drsfd" path="res://scenes/leaderboard.tscn" id="4_lbhrr"]
+
+[node name="Game" type="Control" unique_id=1786524596]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_lnu2h")
+
+[node name="SustainedStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1953641579]
+bus = &"SFX"
+
+[node name="SFXPlayer" type="Node" parent="." unique_id=2134836038]
+script = ExtResource("1_uwrxv")
+
+[node name="UIRoot" type="CanvasLayer" parent="." unique_id=144583278]
+
+[node name="GameContent" parent="UIRoot" unique_id=1271671968 instance=ExtResource("3_lnu2h")]
+
+[node name="Leaderboard" parent="." unique_id=886819266 instance=ExtResource("4_lbhrr")]
+layer = 10

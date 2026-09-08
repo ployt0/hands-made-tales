@@ -1,0 +1,198 @@
+[gd_scene format=3 uid="uid://d0e18qxtkymrq"]
+
+[ext_resource type="Script" uid="uid://cujkcf3rl0dr2" path="res://scripts/game_content.gd" id="1_g2opt"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gfnfb"]
+bg_color = Color(0.11372549, 0.11372549, 0.14509805, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.25, 0.25, 0.3, 0.8)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[node name="GameContent" type="Control" unique_id=1271671968]
+custom_minimum_size = Vector2(1600, 900)
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_g2opt")
+
+[node name="InfoVBox" type="VBoxContainer" parent="." unique_id=1610662955]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 20.0
+offset_right = 30.0
+offset_bottom = 20.0
+
+[node name="MatchNumLabel" type="Label" parent="InfoVBox" unique_id=193664233]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Match 1 / 7  |  Table Ante: $10"
+
+[node name="ClockLabel" type="Label" parent="InfoVBox" unique_id=1334212498]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Match Clock: 01:05"
+
+[node name="StageLabel" type="Label" parent="InfoVBox" unique_id=272220502]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Stage: PREFLOP"
+
+[node name="PotLabel" type="Label" parent="." unique_id=227670226]
+modulate = Color(1, 0.84313726, 0, 1)
+custom_minimum_size = Vector2(200, 40)
+layout_mode = 0
+offset_left = 700.0
+offset_top = 260.0
+offset_right = 700.0
+offset_bottom = 260.0
+theme_override_font_sizes/font_size = 28
+text = "POT: $30"
+horizontal_alignment = 1
+
+[node name="CommunityHBox" type="HBoxContainer" parent="." unique_id=1963067920]
+layout_mode = 0
+offset_left = 525.0
+offset_top = 320.0
+offset_right = 525.0
+offset_bottom = 320.0
+theme_override_constants/separation = 15
+
+[node name="CommunityPanel0" type="Panel" parent="CommunityHBox" unique_id=2113575846]
+custom_minimum_size = Vector2(95, 140)
+layout_mode = 2
+
+[node name="CommunityTexture0" type="TextureRect" parent="CommunityHBox/CommunityPanel0" unique_id=88359262]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CommunityPanel1" type="Panel" parent="CommunityHBox" unique_id=1065103936]
+custom_minimum_size = Vector2(95, 140)
+layout_mode = 2
+
+[node name="CommunityTexture1" type="TextureRect" parent="CommunityHBox/CommunityPanel1" unique_id=502780563]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CommunityPanel2" type="Panel" parent="CommunityHBox" unique_id=472299261]
+custom_minimum_size = Vector2(95, 140)
+layout_mode = 2
+
+[node name="CommunityTexture2" type="TextureRect" parent="CommunityHBox/CommunityPanel2" unique_id=1059009315]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CommunityPanel3" type="Panel" parent="CommunityHBox" unique_id=1267810290]
+custom_minimum_size = Vector2(95, 140)
+layout_mode = 2
+
+[node name="CommunityTexture3" type="TextureRect" parent="CommunityHBox/CommunityPanel3" unique_id=6246662]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CommunityPanel4" type="Panel" parent="CommunityHBox" unique_id=1487738932]
+custom_minimum_size = Vector2(95, 140)
+layout_mode = 2
+
+[node name="CommunityTexture4" type="TextureRect" parent="CommunityHBox/CommunityPanel4" unique_id=1503788997]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ActionsHBox" type="HBoxContainer" parent="." unique_id=101432348]
+layout_mode = 0
+offset_left = 520.0
+offset_top = 835.0
+offset_right = 520.0
+offset_bottom = 835.0
+theme_override_constants/separation = 15
+
+[node name="FoldBtn" type="Button" parent="ActionsHBox" unique_id=1802681711]
+custom_minimum_size = Vector2(90, 45)
+layout_mode = 2
+text = "Fold"
+
+[node name="CallBtn" type="Button" parent="ActionsHBox" unique_id=892378867]
+custom_minimum_size = Vector2(110, 45)
+layout_mode = 2
+text = "Check"
+
+[node name="RaiseSlider" type="HSlider" parent="ActionsHBox" unique_id=2058257261]
+custom_minimum_size = Vector2(120, 45)
+layout_mode = 2
+min_value = 20.0
+max_value = 990.0
+value = 20.0
+
+[node name="RaiseLabel" type="Label" parent="ActionsHBox" unique_id=1640455371]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+text = "$20"
+
+[node name="RaiseBtn" type="Button" parent="ActionsHBox" unique_id=1768567270]
+custom_minimum_size = Vector2(160, 45)
+layout_mode = 2
+text = "Raise to $30"
+
+[node name="DealNextBtn" type="Button" parent="." unique_id=1458108902]
+visible = false
+custom_minimum_size = Vector2(180, 50)
+layout_mode = 0
+offset_left = 710.0
+offset_top = 480.0
+offset_right = 710.0
+offset_bottom = 480.0
+text = "Deal Next Hand"
+
+[node name="NextMatchBtn" type="Button" parent="." unique_id=1154629552]
+visible = false
+custom_minimum_size = Vector2(260, 50)
+layout_mode = 0
+offset_left = 670.0
+offset_top = 480.0
+offset_right = 670.0
+offset_bottom = 480.0
+text = "Advance to Next Match ->"
+
+[node name="LogPanel" type="PanelContainer" parent="." unique_id=1691727502]
+custom_minimum_size = Vector2(320, 240)
+layout_mode = 0
+offset_left = 30.0
+offset_top = 620.0
+offset_right = 350.0
+offset_bottom = 860.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_gfnfb")
+
+[node name="LogMargin" type="MarginContainer" parent="LogPanel" unique_id=819534954]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="LogScroll" type="ScrollContainer" parent="LogPanel/LogMargin" unique_id=938688818]
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="LogVBox" type="VBoxContainer" parent="LogPanel/LogMargin/LogScroll" unique_id=1435169765]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 3

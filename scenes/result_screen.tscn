@@ -1,0 +1,97 @@
+[gd_scene format=3 uid="uid://dwaj1245a6vo3"]
+
+[ext_resource type="Script" uid="uid://b3u7mo48j5ioh" path="res://scripts/result_screen.gd" id="1_y7kih"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p64tj"]
+bg_color = Color(0.12, 0.12, 0.14, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3, 0.3, 0.35, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="ResultScreen" type="CanvasLayer" unique_id=839514851]
+layer = 5
+script = ExtResource("1_y7kih")
+
+[node name="Dimmer" type="ColorRect" parent="." unique_id=1613898681]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.6)
+
+[node name="Panel" type="PanelContainer" parent="." unique_id=1913910267]
+custom_minimum_size = Vector2(620, 520)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -520.0
+offset_top = -260.0
+offset_right = 284.0
+offset_bottom = 260.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_p64tj")
+
+[node name="Margin" type="MarginContainer" parent="Panel" unique_id=102547456]
+layout_mode = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 25
+theme_override_constants/margin_right = 30
+theme_override_constants/margin_bottom = 25
+
+[node name="VBox" type="VBoxContainer" parent="Panel/Margin" unique_id=1420081364]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="TitleLabel" type="Label" parent="Panel/Margin/VBox" unique_id=935478958]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "TOURNAMENT RESULT"
+horizontal_alignment = 1
+
+[node name="StatsLabel" type="Label" parent="Panel/Margin/VBox" unique_id=1606489474]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 16
+autowrap_mode = 3
+
+[node name="BtnHBox" type="HBoxContainer" parent="Panel/Margin/VBox" unique_id=1328818239]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="BtnRestart" type="Button" parent="Panel/Margin/VBox/BtnHBox" unique_id=1899725223]
+custom_minimum_size = Vector2(160, 45)
+layout_mode = 2
+text = "Play Again"
+
+[node name="BtnContinue" type="Button" parent="Panel/Margin/VBox/BtnHBox" unique_id=1184358124]
+custom_minimum_size = Vector2(180, 45)
+layout_mode = 2
+text = "Continue (Endless)"
+
+[node name="SubmissionVBox" type="VBoxContainer" parent="Panel/Margin/VBox/BtnHBox" unique_id=580062479]
+layout_mode = 2
+
+[node name="Username" type="LineEdit" parent="Panel/Margin/VBox/BtnHBox/SubmissionVBox" unique_id=1269960719]
+process_mode = 3
+custom_minimum_size = Vector2(260, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+placeholder_text = "Username"
+max_length = 24
+
+[node name="SubmitScoreButton" type="Button" parent="Panel/Margin/VBox/BtnHBox/SubmissionVBox" unique_id=1520023650]
+process_mode = 3
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Submit score"
+
+[connection signal="text_changed" from="Panel/Margin/VBox/BtnHBox/SubmissionVBox/Username" to="." method="_on_username_text_changed"]
+[connection signal="text_submitted" from="Panel/Margin/VBox/BtnHBox/SubmissionVBox/Username" to="." method="_on_username_text_submitted"]
+[connection signal="pressed" from="Panel/Margin/VBox/BtnHBox/SubmissionVBox/SubmitScoreButton" to="." method="submit_name_score_pair"]

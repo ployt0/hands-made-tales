@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://bfmxmmawr4mvx"]
+
+[ext_resource type="AudioStream" uid="uid://dp20lwt1wsxvn" path="res://assets/music/best-jazz-club-in-new-orleans.ogg" id="1_35tc0"]
+[ext_resource type="AudioStream" uid="uid://nlvx6rs1aqao" path="res://assets/music/poker-player.ogg" id="3_gdwge"]
+
+[sub_resource type="AudioStreamInteractive" id="AudioStreamInteractive_js0y0"]
+clip_count = 2
+clip_0/name = &"Poker Player"
+clip_0/stream = ExtResource("3_gdwge")
+clip_0/auto_advance = 0
+clip_1/name = &"Best Jazz Club In New Orleans"
+clip_1/stream = ExtResource("1_35tc0")
+clip_1/auto_advance = 0
+
+[node name="MusicStreamPlayer" type="AudioStreamPlayer" unique_id=98608138]
+process_mode = 3
+stream = SubResource("AudioStreamInteractive_js0y0")
+autoplay = true
+bus = &"Music"

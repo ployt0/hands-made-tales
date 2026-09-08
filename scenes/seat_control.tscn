@@ -1,0 +1,97 @@
+[gd_scene format=3 uid="uid://d3ynawrmc7aup"]
+
+[ext_resource type="Script" uid="uid://c2olw5ilqwn0e" path="res://scripts/seat_control.gd" id="1_48wgq"]
+[ext_resource type="Texture2D" path="res://assets/art/cards/4_of_hearts.webp" id="1_cda2e"]
+[ext_resource type="Texture2D" path="res://assets/art/cards/3_of_clubs.webp" id="2_48wgq"]
+
+[node name="SeatControl" type="Control" unique_id=909285698]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 700.0
+offset_top = 560.0
+offset_right = 700.0
+offset_bottom = 560.0
+script = ExtResource("1_48wgq")
+
+[node name="PortraitRect" type="TextureRect" parent="." unique_id=682527516]
+custom_minimum_size = Vector2(108, 108)
+layout_mode = 0
+expand_mode = 1
+stretch_mode = 5
+
+[node name="NameLabel" type="Label" parent="." unique_id=1037748748]
+layout_mode = 0
+offset_left = 140.0
+offset_top = 5.0
+offset_right = 140.0
+offset_bottom = 5.0
+theme_override_font_sizes/font_size = 18
+text = "You"
+
+[node name="ChipsLabel" type="Label" parent="." unique_id=695354871]
+layout_mode = 0
+offset_left = 140.0
+offset_top = 30.0
+offset_right = 140.0
+offset_bottom = 30.0
+theme_override_font_sizes/font_size = 16
+text = "Chips: $990"
+
+[node name="CurrentBetLabel" type="Label" parent="." unique_id=1354706354]
+modulate = Color(1, 0.64705884, 0, 1)
+layout_mode = 0
+offset_left = 140.0
+offset_top = 55.0
+offset_right = 140.0
+offset_bottom = 55.0
+theme_override_font_sizes/font_size = 16
+text = "Bet: $10"
+
+[node name="ActionLabel" type="Label" parent="." unique_id=1805867972]
+modulate = Color(1, 1, 0, 1)
+layout_mode = 0
+offset_left = 140.0
+offset_top = 80.0
+offset_right = 140.0
+offset_bottom = 80.0
+theme_override_font_sizes/font_size = 16
+
+[node name="SpeechLabel" type="Label" parent="." unique_id=832717173]
+modulate = Color(0, 1, 1, 1)
+layout_mode = 0
+offset_left = -20.0
+offset_top = -30.0
+offset_right = -20.0
+offset_bottom = -30.0
+theme_override_font_sizes/font_size = 16
+
+[node name="CardHBox" type="HBoxContainer" parent="." unique_id=1884053793]
+layout_mode = 0
+offset_top = 120.0
+offset_right = 200.0
+offset_bottom = 260.0
+theme_override_constants/separation = 14
+
+[node name="CardPanel0" type="Panel" parent="CardHBox" unique_id=629355108]
+custom_minimum_size = Vector2(95, 140)
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="CardHBox/CardPanel0" unique_id=460438896]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource("1_cda2e")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CardPanel1" type="Panel" parent="CardHBox" unique_id=743331896]
+custom_minimum_size = Vector2(95, 140)
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="CardHBox/CardPanel1" unique_id=1017608937]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource("2_48wgq")
+expand_mode = 1
+stretch_mode = 5

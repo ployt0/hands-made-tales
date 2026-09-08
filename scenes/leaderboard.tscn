@@ -1,0 +1,53 @@
+[gd_scene format=3 uid="uid://dli7egk4drsfd"]
+
+[ext_resource type="Script" uid="uid://d07vi4opim7ke" path="res://scripts/leaderboard.gd" id="2_bj5gm"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mrg81"]
+bg_color = Color(0.11372549, 0.11372549, 0.14509805, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.25, 0.25, 0.3, 0.8)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[node name="Leaderboard" type="CanvasLayer" unique_id=886819266]
+layer = 6
+script = ExtResource("2_bj5gm")
+
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=1211172402]
+custom_minimum_size = Vector2(320, 0)
+offset_left = 1265.0
+offset_top = 597.0
+offset_right = 1585.0
+offset_bottom = 868.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_mrg81")
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer" unique_id=939826840]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="LBVBox" type="VBoxContainer" parent="PanelContainer/MarginContainer" unique_id=1895294552]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="LeaderboardLabel" type="Label" parent="PanelContainer/MarginContainer/LBVBox" unique_id=238954268]
+layout_mode = 2
+text = "LEADERBOARD"
+horizontal_alignment = 1
+
+[node name="InfoLabel" type="Label" parent="PanelContainer/MarginContainer/LBVBox" unique_id=1266275968]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+text = "LOADING_LABEL"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="PanelContainer/MarginContainer/LBVBox" unique_id=1794422331]
+layout_mode = 2
