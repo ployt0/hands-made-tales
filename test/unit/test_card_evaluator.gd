@@ -1,4 +1,4 @@
-extends "res://addons/gut/test.gd"
+extends GutTest
 
 # Convenience helper to create Card instances
 func _c(rank: int, suit: int) -> Card:
