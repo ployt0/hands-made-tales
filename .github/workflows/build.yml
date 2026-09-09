@@ -114,6 +114,13 @@ jobs:
           cp -r /tmp/gut/*/addons/gut addons/
           rm -rf /tmp/gut
 
+      - name: Run GUT unit tests (early fail)
+        run: |
+          if [ -f "addons/gut/gut_cmdln.gd" ]; then
+            godot --headless -q --import
+            godot --headless -s addons/gut/gut_cmdln.gd -gexit -gdir=res://test/unit
+          fi
+
       - name: Get GDMaim addon
         run: |
           GDMAIM_TAG="${GDMAIM_VERSION}"
@@ -152,14 +159,6 @@ jobs:
           fi
 
           sed -i "s|YOUR_LEADERBOARD_KEY_HERE|${TALO_KEY}|g" addons/talo/settings.cfg
-
-      - name: Run GUT Unit tests (early fail)
-        continue-on-error: true # Set to false once tests are active
-        run: |
-          if [ -f "addons/gut/gut_cmdln.gd" ]; then
-            godot --headless -q --import
-            godot --headless -s addons/gut/gut_cmdln.gd -gexit -gdir=res://test/unit
-          fi
 
       - name: Clone Godot engine source
         run: |
