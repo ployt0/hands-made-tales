@@ -1,4 +1,4 @@
-name: Build and export "hands made tales"
+name: Build and Export "hands made tales"
 
 on:
   push:
@@ -40,7 +40,6 @@ on:
           - '0.3.0'
           - '0.2.0'
 
-
 env:
   GODOT_VERSION: "4.7.2-stable"
   GODOT_TEMPLATE_DIR: "4.7.2.stable"
@@ -51,133 +50,59 @@ env:
   GDMAIM_VERSION: ${{ inputs.gdmaim_version || '0.3.0' }}
 
 jobs:
-  build-and-export:
-    runs-on: ubuntu-latest
-
+  build-templates:
+    # TODO ubuntu-slim has a 15 minute TTL. It would not work. Self hosted runners now cost.
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout project
         uses: actions/checkout@v6
 
+      # Cache check: if these specific compiled binaries already exist in cache, restore them!
+      - name: Check pre-compiled template cache
+        id: bin-cache
+        uses: actions/cache@v6
+        with:
+          path: /tmp/exported-templates
+          key: custom-templates-${{ env.GODOT_VERSION }}-${{ env.EMSDK_VERSION }}-${{ hashFiles('hands_talo5.gdbuild') }}
+
       - name: Setup Python
+        if: steps.bin-cache.outputs.cache-hit != 'true'
         uses: actions/setup-python@v7
         with:
           python-version: '3.13'
 
-      - name: Install system build tools
+      - name: Install build tools & Emscripten
+        if: steps.bin-cache.outputs.cache-hit != 'true'
         run: |
           sudo apt-get update
           sudo apt-get install -y mingw-w64 ccache
-
-          # Force MinGW to use the POSIX threading model
           sudo update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix
           sudo update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
-
           pip install scons
 
       - name: Setup Emscripten (Web)
+        if: steps.bin-cache.outputs.cache-hit != 'true'
         uses: emscripten-core/setup-emsdk@v15
         with:
           version: ${{ env.EMSDK_VERSION }}
 
-      - name: Verify
-        run: emcc -v
-
-      # Caches compiled object files so builds take ~1-2 min instead of 25 min after the first run
-      - name: SCons cache
+      - name: SCons intermediate cache
+        if: steps.bin-cache.outputs.cache-hit != 'true'
         uses: actions/cache@v6
         with:
           path: ${{ env.SCONS_CACHE }}
           key: ${{ runner.os }}-scons-${{ env.GODOT_VERSION }}-emsdk-${{ env.EMSDK_VERSION }}-${{ hashFiles('hands_talo5.gdbuild') }}
           restore-keys: |
             ${{ runner.os }}-scons-${{ env.GODOT_VERSION }}-emsdk-${{ env.EMSDK_VERSION }}-
-            ${{ runner.os }}-scons-${{ env.GODOT_VERSION }}-
-
-      - name: Download Godot engine editor
-        run: |
-          wget -q https://github.com/godotengine/godot/releases/download/${{ env.GODOT_VERSION }}/Godot_v${{ env.GODOT_VERSION }}_linux.x86_64.zip
-          unzip -q Godot_v${{ env.GODOT_VERSION }}_linux.x86_64.zip
-          mv Godot_v${{ env.GODOT_VERSION }}_linux.x86_64 /usr/local/bin/godot
-          chmod +x /usr/local/bin/godot
-
-      - name: Get GUT addon
-        run: |
-          GUT_TAG="${GUT_VERSION}"
-          URL="https://github.com/bitwes/Gut/archive/refs/tags/${GUT_TAG}.zip"
-
-          mkdir -p /tmp/gut
-          curl -fsSL "$URL" -o /tmp/gut/gut.zip
-          unzip -q /tmp/gut/gut.zip -d /tmp/gut/
-
-          # Don't worry about bloat, we aren't tracing dependencies for export remotely.
-          mkdir -p addons/
-          # Match /tmp/gut/Gut-*/addons/gut using a wildcard
-          cp -r /tmp/gut/*/addons/gut addons/
-          rm -rf /tmp/gut
-
-      - name: Run GUT unit tests (early fail)
-        run: |
-          if [ -f "addons/gut/gut_cmdln.gd" ]; then
-            godot --headless -q --import
-            godot --headless -s addons/gut/gut_cmdln.gd -gexit -gdir=res://test/unit
-          fi
-
-      - name: Get GDMaim addon
-        run: |
-          GDMAIM_TAG="${GDMAIM_VERSION}"
-          URL="https://github.com/cherriesandmochi/gdmaim/archive/refs/tags/${GDMAIM_TAG}.zip"
-
-          mkdir -p /tmp/gdmaim
-          curl -fsSL "$URL" -o /tmp/gdmaim/gdmaim.zip
-          unzip -q /tmp/gdmaim/gdmaim.zip -d /tmp/gdmaim/
-
-          # Don't worry about bloat, we aren't tracing dependencies for export remotely.
-          mkdir -p addons/
-          cp -r /tmp/gdmaim/*/addons/gdmaim addons/
-          rm -rf /tmp/gdmaim
-
-      - name: Setup talo addon
-        run: |
-          TALO_TAG="${TALO_VERSION}"
-          URL="https://github.com/TaloDev/godot/releases/download/${TALO_TAG}/talo-godot-${TALO_TAG}.zip"
-
-          mkdir -p /tmp/talo
-          curl -fsSL "$URL" -o /tmp/talo/talo.zip
-          unzip -q /tmp/talo/talo.zip -d /tmp/talo/
-
-          mkdir -p addons/
-          rm -fr /tmp/talo/addons/talo/samples
-          cp -r /tmp/talo/addons/talo addons/
-          rm -rf /tmp/talo
-
-      - name: Configure Talo credentials
-        env:
-          TALO_KEY: ${{ secrets.TALO_CLIENT_KEY }}
-        run: |
-          if [ -z "$TALO_KEY" ]; then
-            echo "Error: TALO_CLIENT_KEY secret is not set!"
-            exit 1
-          fi
-
-          sed -i "s|YOUR_LEADERBOARD_KEY_HERE|${TALO_KEY}|g" addons/talo/settings.cfg
 
       - name: Clone Godot engine source
+        if: steps.bin-cache.outputs.cache-hit != 'true'
         run: |
           git clone -q --depth 1 --branch ${{ env.GODOT_VERSION }} https://github.com/godotengine/godot.git /tmp/godot-source
           cp hands_talo5.gdbuild /tmp/godot-source/
 
-
-      - name: Compile web template (dlink + threads)
-        working-directory: /tmp/godot-source
-        run: |
-          scons platform=web target=template_release \
-            threads=yes d3d12=no debug_symbols=no optimize=size lto=full \
-            module_text_server_adv_enabled=no module_text_server_fb_enabled=yes \
-            disable_3d=yes dlink_enabled=yes disable_advanced_gui=yes \
-            build_profile=hands_talo5.gdbuild \
-            cache_path=${{ env.SCONS_CACHE }} -j$(nproc)
-
-
-      - name: Compile Windows template (x-compile with MinGW)
+      - name: Compile Windows template
+        if: steps.bin-cache.outputs.cache-hit != 'true'
         working-directory: /tmp/godot-source
         run: |
           scons platform=windows arch=x86_64 target=template_release \
@@ -188,15 +113,101 @@ jobs:
             build_profile=hands_talo5.gdbuild \
             cache_path=${{ env.SCONS_CACHE }} -j$(nproc)
 
+      - name: Compile Web template
+        if: steps.bin-cache.outputs.cache-hit != 'true'
+        working-directory: /tmp/godot-source
+        run: |
+          scons platform=web target=template_release \
+            threads=yes d3d12=no debug_symbols=no optimize=size lto=full \
+            module_text_server_adv_enabled=no module_text_server_fb_enabled=yes \
+            disable_3d=yes dlink_enabled=yes disable_advanced_gui=yes \
+            build_profile=hands_talo5.gdbuild \
+            cache_path=${{ env.SCONS_CACHE }} -j$(nproc)
 
-      - name: Install custom templates into Godot default folder
+      # TODO: Linux, MAC and Android templates; in another script, this is slow enough.
+      - name: Stage templates
+        if: steps.bin-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p /tmp/exported-templates
+          cp /tmp/godot-source/bin/godot.web.template_release.wasm32.dlink.zip /tmp/exported-templates/web_dlink_release.zip
+          cp /tmp/godot-source/bin/godot.windows.template_release.x86_64.exe /tmp/exported-templates/windows_release_x86_64.exe
+
+      - name: Upload custom templates artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: godot-custom-templates-${{ env.GODOT_VERSION }}
+          path: /tmp/exported-templates/
+
+  export-game:
+    needs: build-templates
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v6
+
+      - name: Download Godot engine editor
+        run: |
+          wget -q https://github.com/godotengine/godot/releases/download/${{ env.GODOT_VERSION }}/Godot_v${{ env.GODOT_VERSION }}_linux.x86_64.zip
+          unzip -q Godot_v${{ env.GODOT_VERSION }}_linux.x86_64.zip
+          mv Godot_v${{ env.GODOT_VERSION }}_linux.x86_64 /usr/local/bin/godot
+          chmod +x /usr/local/bin/godot
+
+      # Download the pre-built templates from prior job.
+      - name: Download custom templates
+        uses: actions/download-artifact@v7
+        with:
+          name: godot-custom-templates-${{ env.GODOT_VERSION }}
+          path: /tmp/downloaded-templates
+
+      - name: Install templates into Godot directory
         run: |
           DEST="$HOME/.local/share/godot/export_templates/${{ env.GODOT_TEMPLATE_DIR }}"
           mkdir -p "$DEST"
+          cp -r /tmp/downloaded-templates/* "$DEST/"
 
-          cp /tmp/godot-source/bin/godot.web.template_release.wasm32.dlink.zip "$DEST/web_dlink_release.zip"
-          cp /tmp/godot-source/bin/godot.web.template_release.wasm32.dlink.zip "$DEST/web_release.zip"
-          cp /tmp/godot-source/bin/godot.windows.template_release.x86_64.exe "$DEST/windows_release_x86_64.exe"
+      - name: Get GUT addon
+        run: |
+          URL="https://github.com/bitwes/Gut/archive/refs/tags/${GUT_VERSION}.zip"
+          mkdir -p /tmp/gut
+          curl -fsSL "$URL" -o /tmp/gut/gut.zip
+          unzip -q /tmp/gut/gut.zip -d /tmp/gut/
+          mkdir -p addons/
+          cp -r /tmp/gut/*/addons/gut addons/
+          rm -rf /tmp/gut
+
+      - name: Get GDMaim addon
+        run: |
+          URL="https://github.com/cherriesandmochi/gdmaim/archive/refs/tags/${GDMAIM_VERSION}.zip"
+          mkdir -p /tmp/gdmaim
+          curl -fsSL "$URL" -o /tmp/gdmaim/gdmaim.zip
+          unzip -q /tmp/gdmaim/gdmaim.zip -d /tmp/gdmaim/
+          mkdir -p addons/
+          cp -r /tmp/gdmaim/*/addons/gdmaim addons/
+          rm -rf /tmp/gdmaim
+
+      - name: Setup talo addon
+        run: |
+          URL="https://github.com/TaloDev/godot/releases/download/${TALO_VERSION}/talo-godot-${TALO_VERSION}.zip"
+          mkdir -p /tmp/talo
+          curl -fsSL "$URL" -o /tmp/talo/talo.zip
+          unzip -q /tmp/talo/talo.zip -d /tmp/talo/
+          mkdir -p addons/
+          rm -rf /tmp/talo/addons/talo/samples
+          cp -r /tmp/talo/addons/talo addons/
+          rm -rf /tmp/talo
+
+      - name: Configure Talo credentials
+        env:
+          TALO_KEY: ${{ secrets.TALO_SECRET_KEY }}
+        run: |
+          if [ -n "$TALO_KEY" ]; then
+            sed -i "s|YOUR_LEADERBOARD_KEY_HERE|${TALO_KEY}|g" addons/talo/settings.cfg
+          fi
+
+      - name: Run GUT Unit tests
+        run: |
+          godot --headless --import
+          godot --headless -s addons/gut/gut_cmdln.gd -gdir=res://test/unit -gexit
 
       - name: Export web
         run: |
@@ -219,3 +230,5 @@ jobs:
         with:
           name: hands-made-tales-windows
           path: export/windows/
+
+
