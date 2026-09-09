@@ -1,4 +1,4 @@
-#extends GutTest
+extends "res://addons/gut/test.gd"
 
 func test_passes():
     # this test will pass because 1 does equal 1
