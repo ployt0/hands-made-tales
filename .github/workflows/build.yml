@@ -204,7 +204,7 @@ jobs:
           # https://note.com/lazy_engineer/n/ncf5bebe04754?hl=en
           # https://github.com/godotengine/godot/issues/77478
           # Boots the editor headlessly to scan all class_name declarations and generate .godot/
-          godot --headless --editor --quit
+          godot --headless --editor --quit-after 50
           ls -al .godot
           cat .godot/global_script_class_cache.cfg
 
