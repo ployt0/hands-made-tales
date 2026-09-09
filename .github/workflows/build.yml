@@ -157,6 +157,7 @@ jobs:
         continue-on-error: true # Set to false once tests are active
         run: |
           if [ -f "addons/gut/gut_cmdln.gd" ]; then
+            godot --headless --import
             godot --headless -s addons/gut/gut_cmdln.gd -gexit
           fi
 
