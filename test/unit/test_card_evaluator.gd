@@ -62,8 +62,8 @@ func test_full_house_compares_trips_before_pair():
     # Player 2: 3s full of Aces (3-3-3-A-A)
     # Three-of-a-Kind determines the winner, not the pair.
 
-    var full_house_fours = [Card.new(4, 0), Card.new(4, 1), Card.new(4, 2), Card.new(2, 0), Card.new(2, 1)]
-    var full_house_threes = [Card.new(3, 0), Card.new(3, 1), Card.new(3, 2), Card.new(14, 0), Card.new(14, 1)]
+    var full_house_fours: Array[Card] = [Card.new(4, 0), Card.new(4, 1), Card.new(4, 2), Card.new(2, 0), Card.new(2, 1)]
+    var full_house_threes: Array[Card] = [Card.new(3, 0), Card.new(3, 1), Card.new(3, 2), Card.new(14, 0), Card.new(14, 1)]
 
     var score_fours = CardEvaluator.evaluate_strength(full_house_fours.slice(0, 2), full_house_fours.slice(2))
     var score_threes = CardEvaluator.evaluate_strength(full_house_threes.slice(0, 2), full_house_threes.slice(2))
