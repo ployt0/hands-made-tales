@@ -198,15 +198,15 @@ jobs:
           cp /tmp/godot-source/bin/godot.web.template_release.wasm32.dlink.zip "$DEST/web_release.zip"
           cp /tmp/godot-source/bin/godot.windows.template_release.x86_64.exe "$DEST/windows_release_x86_64.exe"
 
-      - name: Import project & generate class cache
-        run: |
-          ls -al
-          # https://note.com/lazy_engineer/n/ncf5bebe04754?hl=en
-          # https://github.com/godotengine/godot/issues/77478
-          # Boots the editor headlessly to scan all class_name declarations and generate .godot/
-          godot --headless --editor --quit-after 50
-          ls -al .godot
-          cat .godot/global_script_class_cache.cfg
+      # - name: Import project & generate class cache
+      #   run: |
+      #     ls -al
+      #     # https://note.com/lazy_engineer/n/ncf5bebe04754?hl=en
+      #     # https://github.com/godotengine/godot/issues/77478
+      #     # Boots the editor headlessly to scan all class_name declarations and generate .godot/
+      #     godot --headless --editor --quit-after 50
+      #     ls -al .godot
+      #     cat .godot/global_script_class_cache.cfg
 
       - name: Export web
         run: |
