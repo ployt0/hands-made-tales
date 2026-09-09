@@ -1,7 +1,7 @@
 extends "res://addons/gut/test.gd"
 
 # Convenience helper to create Card instances
-func _c(rank: int, suit: int) -> Card
+func _c(rank: int, suit: int) -> Card:
     var card = Card.new()
     card.rank = rank
     card.suit = suit
