@@ -1,7 +1,7 @@
 extends "res://addons/gut/test.gd"
 
 # Convenience helper to create Card instances
-func _c(rank: int, suit: int) -> Card:
+func _c(rank: int, suit: int) -> Card
     var card = Card.new()
     card.rank = rank
     card.suit = suit
@@ -97,8 +97,5 @@ func test_flush_beats_straight():
 
     var flush_score = CardEvaluator.evaluate_strength(flush_cards.slice(0, 2), flush_cards.slice(2))
     var straight_score = CardEvaluator.evaluate_strength(straight_cards.slice(0, 2), straight_cards.slice(2))
-
-    assert_gt(flush_score, straight_score, "Flush must rank higher than Straight")
-_cards.slice(2))
 
 	assert_gt(flush_score, straight_score, "Flush must rank higher than Straight")
